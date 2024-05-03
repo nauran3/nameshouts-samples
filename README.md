@@ -1,7 +1,7 @@
 # Nameshouts Integration Samples
 ## Demo Samples
-✅ [Webpage with a Single Name](https://single-name-integration-nameshouts.netlify.app/)  
-✅ [Webpage with Multiple Names](https://multiple-names-integration-nameshouts.netlify.app/)
+📍 [Webpage with a Single Name](https://single-name-integration-nameshouts.netlify.app/)  
+📍 [Webpage with Multiple Names](https://multiple-names-integration-nameshouts.netlify.app/)
 ## Availing Access Token
 - Head over to https://www.nameshouts.com/
 - After signing in, Select "Integrations" option from the sidebar.![Integrations Menu](https://www.brainlytic.org/images/98a11d4b-94e4-4ca6-a73c-f1536cf5ac961714741371070.png
