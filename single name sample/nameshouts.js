@@ -1,24 +1,24 @@
 const ACCESS_TOKEN = 'YOUR_ACCESS_TOKEN';
 const _DEFAULT_DATA_STORE_PORT = 9999;
-const API_BASE_URL='https://api.nameshouts.com/api/v2.0'
+const API_BASE_URL = 'https://api.nameshouts.com/api/v2.0'
 
-var isInjected=false
+var isInjected = false
 
 const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
         const nameTagElement = mutation.target.querySelector("h1[itemprop='name']");
-        if(!isInjected&&nameTagElement){
-            isInjected=true
+        if (!isInjected && nameTagElement) {
+            isInjected = true
             var nameTag = $("h1[itemprop='name']");
             nameTag.css('display', 'inline-flex');
             var nameToQuery = nameTag.text().trim();
             var cssStyle = 'display:inline-flex;margin-left: 5px;margin-bottom: 4px;vertical-align: middle;';
-                    var audioImgStyle = 'margin-left: 5px;margin-bottom: 10px;vertical-align: middle;height:24px;width:24px;';
-                    var infoImgStyle = 'margin-left: -8px;margin-bottom: -7px;vertical-align: middle; width: 12px !important;height: 12px !important;';
-                    const cardPosition = 'position: absolute; display: inline-block; margin-top: 145px !important;margin-left: 130px !important;';
+            var audioImgStyle = 'margin-left: 5px;margin-bottom: 10px;vertical-align: middle;height:24px;width:24px;';
+            var infoImgStyle = 'margin-left: -8px;margin-bottom: -7px;vertical-align: middle; width: 12px !important;height: 12px !important;';
+            const cardPosition = 'position: absolute; display: inline-block; margin-top: 145px !important;margin-left: 130px !important;';
             var multiName = false;
             var mulInstance = false;
-    
+
             var index = 1;
             injectAudio(
                 nameTag,
@@ -41,10 +41,10 @@ observer.observe(document, {
     subtree: true,
 });
 
-var remainingShouts=null
+var remainingShouts = null
 getRemainingShouts()
 
-async function getRemainingShouts(){
+async function getRemainingShouts() {
     const myHeaders = new Headers({
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${ACCESS_TOKEN}`
@@ -52,12 +52,12 @@ async function getRemainingShouts(){
 
     const base_url = `${API_BASE_URL}/activity-count`;
 
-    var rawResponse=await fetch(base_url, {
+    var rawResponse = await fetch(base_url, {
         method: 'GET',
         headers: myHeaders,
     })
-    var response=await rawResponse.json()
-    remainingShouts=response.limit-response.count
+    var response = await rawResponse.json()
+    remainingShouts = response.limit - response.count
 }
 
 function injectAudio(nameTag, nameToQuery, cssStyle, audioImgStyle, infoImgStyle, cardPosition, index, multiName, source, mulInstance) {
@@ -112,10 +112,10 @@ function injectAudio(nameTag, nameToQuery, cssStyle, audioImgStyle, infoImgStyle
     $(`#${preLoadBtnId}`).hover(async function () {
         closeCards(cardId);
 
-        await new Promise(resolve=>{
-            var checkShouts=()=>{
-                if(remainingShouts===null)
-                    setTimeout(checkShouts,200)
+        await new Promise(resolve => {
+            var checkShouts = () => {
+                if (remainingShouts === null)
+                    setTimeout(checkShouts, 200)
                 else
                     resolve()
             }
@@ -146,7 +146,7 @@ function injectAudio(nameTag, nameToQuery, cssStyle, audioImgStyle, infoImgStyle
             return;
 
         }
-        
+
         const facade = new Facade();
         const nameList = await facade.fetchNameList(source, nameToQuery);
         let namesLoaded = new Map();
@@ -156,7 +156,7 @@ function injectAudio(nameTag, nameToQuery, cssStyle, audioImgStyle, infoImgStyle
         allNamesData.nameList = nameList;
         let uuid = generateUUID();
         namesLoaded.set(uuid, allNamesData);
-        
+
         if (nameList.length > 0) {
             populateAudioBtn(
                 preLoadBtnId,
@@ -194,12 +194,12 @@ function injectAudio(nameTag, nameToQuery, cssStyle, audioImgStyle, infoImgStyle
         $(document).on("click", `#${audioImgBtnId}`, async function (e) {
             let namesInfo = namesLoaded.get(e.target.dataset.uuid);
             let nameToPlay = namesInfo.nameList[namesInfo.langSelected];
-    
+
             var playList = nameToPlay.path;
             var mediaUrl = 'https://nslibrary01.blob.core.windows.net/ns-audio/';
 
             var i = 0;
-                        
+
             var audio = playList[i];
             var url = mediaUrl + audio + '.mp3';
 
@@ -215,9 +215,9 @@ function injectAudio(nameTag, nameToQuery, cssStyle, audioImgStyle, infoImgStyle
 
             $(`#${playerId}`).on('ended', function (e) {
                 var endedTag = e.target;
-                i++; 
+                i++;
 
-                if (i < playList.length ) {
+                if (i < playList.length) {
                     var audio = playList[i];
                     var url = mediaUrl + audio + '.mp3';
 
@@ -226,7 +226,7 @@ function injectAudio(nameTag, nameToQuery, cssStyle, audioImgStyle, infoImgStyle
                     $(`#${playerId}`)[0].load();
                     $(`#${playerId}`)[0].play();
                 }
-            
+
             });
         });
 
@@ -241,11 +241,11 @@ function injectAudio(nameTag, nameToQuery, cssStyle, audioImgStyle, infoImgStyle
         //     });
         // }));
 
-        $(`#${infoImgId}`).on('load', function(e) {
+        $(`#${infoImgId}`).on('load', function (e) {
             $(document).on("click", `#${infoImgId}`, toggleCard);
         });
 
-         //display card - for when user not logged in
+        //display card - for when user not logged in
         function addClickListener(infoImgId, cardId, cardCancelId) {
             $(`#${infoImgId}`).on('click', function () {
                 //card display
@@ -274,13 +274,13 @@ function injectAudio(nameTag, nameToQuery, cssStyle, audioImgStyle, infoImgStyle
             //LangSelected contains index of picked language
             //Default is 0
             let nameToPlay = namesInfo.nameList[namesInfo.langSelected];
-        
+
 
             var playList = nameToPlay.path;
             var mediaUrl = 'https://nslibrary01.blob.core.windows.net/ns-audio/';
 
             var i = 0;
-                
+
             var audio = playList[i];
             var url = mediaUrl + audio + '.mp3';
 
@@ -293,9 +293,9 @@ function injectAudio(nameTag, nameToQuery, cssStyle, audioImgStyle, infoImgStyle
 
             $(`#${cardPlayerId}`).on('ended', function (e) {
                 var endedTag = e.target;
-                i++; 
+                i++;
 
-                if (i < playList.length ) {
+                if (i < playList.length) {
                     var audio = playList[i];
                     var url = mediaUrl + audio + '.mp3';
 
@@ -304,15 +304,15 @@ function injectAudio(nameTag, nameToQuery, cssStyle, audioImgStyle, infoImgStyle
                     $(`#${cardPlayerId}`)[0].load();
                     $(`#${cardPlayerId}`)[0].play();
                 }
-            
+
             });
 
         });
 
         $(document).on("change", ".lang-dropdown", async function (e) {
             let selValue = parseInt(this.value);
-        
-            let uuid = $( event.target ).parent().next().find('img').data('uuid');
+
+            let uuid = $(event.target).parent().next().find('img').data('uuid');
             let nameData = namesLoaded.get(uuid);
 
             nameData.langSelected = selValue;
@@ -320,12 +320,12 @@ function injectAudio(nameTag, nameToQuery, cssStyle, audioImgStyle, infoImgStyle
 
 
             //Update selected value for nameData
-            
+
             let nameInfo = nameData.nameList[nameData.langSelected];
             let phonetic = nameInfo.phonetic.join(' ');
 
             //Locate nearest phonetic class to selected card and then update
-            $( event.target ).parent().siblings('.phonetic').text(phonetic);
+            $(event.target).parent().siblings('.phonetic').text(phonetic);
         });
         // });
     });
@@ -335,22 +335,22 @@ function injectAudio(nameTag, nameToQuery, cssStyle, audioImgStyle, infoImgStyle
 
 function populateAudioBtn(preLoadBtnId, audioImgBtnId, audioImgStyle, playerId, infoImgId, infoImgStyle, cardId, cardPosition, cardCancelId, cardAudioBtnId, cardPlayerId, uuid, nameList) {
     var mainDiv = $('<div class="ns-audio-btn" style="display: inline-flex; vertical-align: middle;"></div>');
-                                    
+
     //Audio Btn and Div
-    var btnDiv =  $('<div class="wrap-div" aria-label="Hear pronunciation" data-balloon-pos="up" style="display: inline-flex;"></div>'); 
-    var img = $(`<img id="${audioImgBtnId}" class="dynamic" data-uuid="${uuid}" style="${audioImgStyle}"/>`); 
+    var btnDiv = $('<div class="wrap-div" aria-label="Hear pronunciation" data-balloon-pos="up" style="display: inline-flex;"></div>');
+    var img = $(`<img id="${audioImgBtnId}" class="dynamic" data-uuid="${uuid}" style="${audioImgStyle}"/>`);
     img.attr('src', "../assets/images/ns-btn-loaded.svg");
-                                    
+
     var audioDiv = $(`<audio class="audio-btn" id="${playerId}" style="margin-left: 5px;margin-bottom: 10px;vertical-align: middle;"></audio>`); //Equivalent: $(document.createElement('img'))
     var imgAud = img.add(audioDiv);
     var imgDiv = $(btnDiv).append(imgAud);
-                                    
+
 
     //Info Btn and Div
-    var infoDiv =  $('<div aria-label="Click for more info" data-balloon-pos="up" style="display: inline-flex;"></div>'); //Equivalent: $(document.createElement('img'))
+    var infoDiv = $('<div aria-label="Click for more info" data-balloon-pos="up" style="display: inline-flex;"></div>'); //Equivalent: $(document.createElement('img'))
     var infoIcon = $(`<img id="${infoImgId}" class="info-class get-bigger" style="${infoImgStyle}"/>`);
     infoIcon.attr('src', "../assets/images/ns-info-icon-for-btn.svg");
-                                    
+
     var infoDiv = $(infoDiv).append(infoIcon);
 
     //Combine audio and info btn and put it on a master div
@@ -358,15 +358,15 @@ function populateAudioBtn(preLoadBtnId, audioImgBtnId, audioImgStyle, playerId, 
     var audioCombo = $(mainDiv).append(audioSeg);
 
 
-    
 
-        //Create nameCard
-        
+
+    //Create nameCard
+
     let showLangDropdown = false;
     let nameInfo = {};
     nameInfo = nameList[0];
 
-    if(nameList.length > 1) {
+    if (nameList.length > 1) {
         showLangDropdown = true;
     }
 
@@ -386,7 +386,7 @@ function populateAudioBtn(preLoadBtnId, audioImgBtnId, audioImgStyle, playerId, 
     cardSeg += '<div class="ns-card-cancel-box" aria-label="Close info card!" data-balloon-pos="up">';
     cardSeg += `<img src=${NSCancelIconURL} id="${cardCancelId}" class="ns-card-cancel-icon" style="width:12px;height:12px;"/>`;
     cardSeg += '</div>';
-    if(!showLangDropdown) {
+    if (!showLangDropdown) {
         cardSeg += '<div class="language">';
         cardSeg += langName;
         cardSeg += '</div>';
@@ -396,7 +396,7 @@ function populateAudioBtn(preLoadBtnId, audioImgBtnId, audioImgStyle, playerId, 
         //get available languages and values from list
         cardSeg += '<div class="language">';
         cardSeg += '<select class="lang-dropdown">';
-        for ( let i = 0; i < nameList.length; i++) {
+        for (let i = 0; i < nameList.length; i++) {
             //Set to first value
             if (i === 0) {
                 cardSeg += `<option value=${i} SELECTED>${nameList[i].lang_name}</option>`;
@@ -404,13 +404,13 @@ function populateAudioBtn(preLoadBtnId, audioImgBtnId, audioImgStyle, playerId, 
             else {
                 cardSeg += `<option value=${i}>${nameList[i].lang_name}</option>`;
             }
-            
+
         }
         cardSeg += '</select>';
         cardSeg += '</div>';
-        
+
     }
-    
+
     cardSeg += '<div class="main-audio" aria-label="Hear pronunciation" data-balloon-pos="up">';
     cardSeg += `<img src=${NSMainButtonURL} id="${cardAudioBtnId}" data-uuid="${uuid}" class="main-audio-btn" style="width:36px;height:36px;"/>`;
     cardSeg += `<audio id="${cardPlayerId}"></audio>`;
@@ -421,7 +421,7 @@ function populateAudioBtn(preLoadBtnId, audioImgBtnId, audioImgStyle, playerId, 
     cardSeg += '<div class="phonetic">';
     cardSeg += phonetic;
     cardSeg += '</div>';
-    cardSeg +='</div>';
+    cardSeg += '</div>';
     cardSeg += '</div>';
     var totalCombo = $(audioCombo).add(cardSeg);
 
@@ -532,7 +532,7 @@ function noSearchUpgrade(preLoadBtnId, audioImgBtnId, audioImgStyle, playerId, i
     cardSeg += '</div>';
     var totalCombo = $(audioCombo).add(cardSeg);
     $(`#${preLoadBtnId}`).replaceWith(totalCombo);
-} 
+}
 
 
 class NameFetcher {
@@ -551,7 +551,7 @@ class NameFetcher {
     }
 
     async fetchNameFromDefaultList(languageInformation, nameToQuery) {
-        const searchNameResult = await sendMessage({ nameToSearch: nameToQuery });
+        const searchNameResult = await fetchData({ nameToSearch: nameToQuery });
 
         const mainSearchResults = searchNameResult.main_res_array;
         const nameDetailResults = searchNameResult.name_res_array;
@@ -559,6 +559,7 @@ class NameFetcher {
         const supportedLanguages = Object.entries(mainSearchResults)
             .filter(item => item[1]['all_names_found'])
             .map(item => parseInt(item[0]));
+
 
 
         const nameGroupByLanguageId = Object.values(nameDetailResults)
@@ -584,91 +585,33 @@ class NameFetcher {
     }
 
     async fetchNameFromPrivateList(source, languageInformation, nameToQuery) {
-        const loadListNamesResult = await sendMessage({ loadListNames: source });
-        let userListNames = loadListNamesResult.reduce((previous, current) => {
-            // Identify the full name
-            const fullName = current.names.map(current_name => current_name.name.trim()).join(' ');
+        const searchNameResult = await fetchData({ loadListNames: nameToQuery, source });
+        if (searchNameResult === undefined) return []
+        const nameDetailResults = searchNameResult.names;
 
-            if (fullName === nameToQuery) {
-                previous[fullName] = current.names;
-            }
-
-            return previous;
-        }, {});
-
-    
-        //To detect Combo Name
-        if (Object.keys(userListNames).length !== 0) {
-
-            const language_ids = Object.values(userListNames)[0].map((nameItem) => {
-                return nameItem.language_id;
-            });
-
-            const uniqueLanguageIds = [...new Set(language_ids)];
-
-            //This is a combo name
-            if (uniqueLanguageIds.length > 1) {
-                //Update UserListNames to reflect that
-                const newUserListNames = Object.values(userListNames)[0].map((nameItem) => {
-                    nameItem.language_id = 9999; //For combo names set language_id to 9999
-                    return nameItem;
-                });
-
-                userListNames = newUserListNames;
-            }
-
-            
-
-        }
+        const supportedLanguages = nameDetailResults.length > 0 ? [nameDetailResults[0].language_id] : []
 
 
-
-      
-
-        const userListNamesGroupedByLanguageId = Object.values(userListNames)
+        const nameGroupByLanguageId = Object.values(nameDetailResults)
             .flatMap(item => item)
+            .filter(item => supportedLanguages.includes(item.language_id))
             .reduce((prev, current) => {
                 const nameInformation = prev[current.language_id] ?? {
                     name: [],
                     phonetic: [],
-                    path: [],
-                    language_info: []
+                    path: []
                 };
                 (nameInformation.name ?? []).push(current.name);
                 (nameInformation.phonetic ?? []).push(current.name_phonetic);
                 (nameInformation.path ?? []).push(current.path_directory);
                 nameInformation.language_id = current.language_id;
-                if (current.language_id !== 9999) {
-                    (nameInformation.language_info ?? []).push(languageInformation[current.language_id]);
-                }
-                else {
-                    const comboLangInfo = {lang_id: 9999, lang_name: 'Combo', lang_code_2: 'oo', accent_code: 'oo', visible: 1};
-
-                    (nameInformation.language_info ?? []).push(comboLangInfo);
-                }
-                
+                nameInformation.lang_name = languageInformation[current.language_id]['lang_name'];
                 prev[current.language_id] = nameInformation;
 
                 return prev;
             }, {});
-    
 
-        const nameList = Object.values(userListNamesGroupedByLanguageId).map(current => {
-            const allLanguageIds = current.language_info.map(info => info.language_id);
-            const uniqueLanguageIds = [...new Set(allLanguageIds)];
-
-            if (uniqueLanguageIds.length <= 1) {
-                (current.lang_name) = current.language_info[0]['lang_name'];
-            }
-            else {
-                current.lang_name = 'Combo';
-            }
-
-            return current;
-        }, {});
-    
-
-        return nameList;
+        return Object.values(nameGroupByLanguageId);
     }
 }
 
@@ -684,7 +627,7 @@ class Facade {
 
 
     async fetchLanguageInformationGroupedById() {
-        let languageInformation = await sendMessage({ loadLangs: true });
+        let languageInformation = await fetchData({ loadLangs: true });
 
         const languageInformationGroupedById = languageInformation.data.reduce((previous, current) => {
             previous[current.lang_id] = current;
@@ -696,9 +639,9 @@ class Facade {
 }
 
 
-function sendMessage(msg) {
+function fetchData(inputData) {
     return new Promise((resolve) => {
-        if (msg.loadLangs) {
+        if (inputData.loadLangs) {
 
             const myHeaders = new Headers({
                 'Content-Type': 'application/json',
@@ -721,8 +664,8 @@ function sendMessage(msg) {
 
 
         }
-        else if (msg.nameToSearch.length > 0 && typeof msg.nameToSearch !== undefined) {
-            let nameQuery = msg.nameToSearch.replace(/\s/g, "-");
+        else if (inputData.nameToSearch !== undefined && inputData.nameToSearch.length > 0) {
+            let nameQuery = inputData.nameToSearch.replace(/\s/g, "-");
             const myHeaders = new Headers({
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${ACCESS_TOKEN}`
@@ -742,10 +685,27 @@ function sendMessage(msg) {
 
                 });
         }
+        else if (inputData.loadListNames !== undefined && inputData.loadListNames.length > 0) {
+            let nameQuery = inputData.loadListNames.replace(/\s/g, "-");
+            const myHeaders = new Headers({
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${ACCESS_TOKEN}`
+            });
+            const base_url = `${API_BASE_URL}/user/user-list/get-name-group-from-user-list?user_list_id=${inputData.source}&name=${nameQuery}`;
 
-        // const results = chrome.runtime.sendMessage(message, result => {
-        //     resolve(result);
-        // });
+            fetch(base_url, {
+                method: 'GET',
+                headers: myHeaders,
+            }).then(response => response.json())
+                .then((data) => {
+                    resolve(data[0]);
+                })
+                .catch((error) => {
+                    resolve([])
+                    console.error(error);
+
+                });
+        }
     });
 }
 
