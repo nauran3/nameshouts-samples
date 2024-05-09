@@ -116,7 +116,7 @@
             ```
 
     - `fetchNameFromDefaultList(...)`
-        It works similarly as `fetchNameFromPrivateList(...)` which results in the below API call (in the `fetchData(...)`) function:
+        On the other hand, When `_DEFAULT_DATA_STORE_PORT` is set to a 9999, this function is called. It works similarly as `fetchNameFromPrivateList(...)` but it makes the below API call instead (in the `fetchData(...)` function):
         ```
         let nameQuery = inputData.nameToSearch.replace(/\s/g, "-");
         const myHeaders = new Headers({
