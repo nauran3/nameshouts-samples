@@ -92,7 +92,7 @@
             The route for the above API call is `${API_BASE_URL}/user/user-list/get-name-group-from-user-list` which has 3 query parameters:
             - `user_list_id` : The user list id in which the name would be searched.
             - `name` : The name to be searched
-            - `email` (Optional) : The email address of the person having the name. This is necessary when a list contains multiple people with the same name, in order to differentiate them, this `email` query parameter can be levraged.
+            - `email` (Optional) : The email address of the person having the name. This is necessary when a list contains multiple people with the same name, in order to fetch the name for a specific person, this `email` query parameter can be levraged.
             
             For a name that is recorded by a user, the response object's is_custom flag will be set to true. The response object for a custom name has slightly different attributes compared to a name from the NameShouts database.
             ### In order to be familiar with the different attributes for the user recorded names and the regular ones, head over to [Nameshouts 2.0 API Documentation](https://documenter.getpostman.com/view/1200138/VUjPJ5xc#dc4068d1-b087-45c1-9f9a-6b1ee551a787). You can handle client UI/UX for different cases by following the API documentation irrespective of your stack.
