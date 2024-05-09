@@ -116,19 +116,19 @@
             ```
 
     - `fetchNameFromDefaultList(...)`
-        On the other hand, When `_DEFAULT_DATA_STORE_PORT` is set to a 9999, this function is called. It works similarly as `fetchNameFromPrivateList(...)` but it makes the below API call instead (in the `fetchData(...)` function):
-        ```
-        let nameQuery = inputData.nameToSearch.replace(/\s/g, "-");
-        const myHeaders = new Headers({
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${ACCESS_TOKEN}`
-        });
+        -  On the other hand, When `_DEFAULT_DATA_STORE_PORT` is set to a 9999, this function is called. It works similarly as `fetchNameFromPrivateList(...)` but it makes the below API call instead (in the `fetchData(...)` function):
+            ```
+            let nameQuery = inputData.nameToSearch.replace(/\s/g, "-");
+            const myHeaders = new Headers({
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${ACCESS_TOKEN}`
+            });
 
-        const base_url = `${API_BASE_URL}/name/${nameQuery}`;
+            const base_url = `${API_BASE_URL}/name/${nameQuery}`;
 
-        fetch(base_url, {
-            method: 'GET',
-            headers: myHeaders,
-        })
-        ```
-        Rest of the logics are similar to that of `fetchNameFromPrivateList(...)`.
+            fetch(base_url, {
+                method: 'GET',
+                headers: myHeaders,
+            })
+            ```
+            Rest of the logics are similar to that of `fetchNameFromPrivateList(...)`.
