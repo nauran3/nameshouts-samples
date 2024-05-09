@@ -71,3 +71,59 @@
     const cardPosition = 'position: absolute; display: inline-block; margin-top: 145px !important;margin-left: 130px !important;';
     ```
 - This code will work for asynchronous fetching or lazy loading of the names individually as `mutationObserver` is implemented.
+
+## How does it work ?
+-  If the value of `_DEFAULT_DATA_STORE_PORT` identifier is set to `9999`, then names will be fetched from the default list, otherwise, if you want any of your own lists to be fetched from, replace the value of `_DEFAULT_DATA_STORE_PORT` with the `listId` (Which can be found in the browser URL when you enter into a particular list).
+- In `nameshouts.js`, there're 2 functions dedicated for either case:
+    - `fetchNameFromPrivateList(...)`
+        - When `_DEFAULT_DATA_STORE_PORT` is set to a listId other than 9999, this function is called. It calls `fetchData(...)` method with argument having `loadListNames` field, inside of the `fetchData(...)` method, for this specific case, you'll see the below API call:
+            ```
+            const myHeaders = new Headers({
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${ACCESS_TOKEN}`
+            });
+            const base_url = `${API_BASE_URL}/user/user-list/get-name-group-from-user-list?user_list_id=${inputData.source}&name=${nameQuery}`;
+
+            fetch(base_url, {
+                method: 'GET',
+                headers: myHeaders,
+            })
+            ```
+            For a name that is recorded by a user, the response object's is_custom flag will be set to true. The response object for a custom name has slightly different attributes compared to a name from the NameShouts database.
+            ### In order to be familiar with the different attributes for the user recorded names and the regular ones, head over to [Nameshouts 2.0 API Documentation](https://documenter.getpostman.com/view/1200138/VUjPJ5xc#dc4068d1-b087-45c1-9f9a-6b1ee551a787). You can handle client UI/UX for different cases by following the API documentation irrespective of your stack.
+        - If the name is not found in the private list, then it is searched in the default list as a fallback option which is covered in the below lines of code of `nameshouts.js`:
+            ```
+            class NameFetcher {
+                async fetch(source, languageInformation, nameToQuery) {
+                    let nameList = [];
+                    if (source !== 9999) {
+                        nameList = await this.fetchNameFromPrivateList(source, languageInformation, nameToQuery);
+                    }
+                    if (nameList.length == 0) {
+                        nameList = await this.fetchNameFromDefaultList(languageInformation, nameToQuery);
+                    }
+                    return nameList;
+                }
+                .
+                .
+                .
+            }
+            ```
+
+    - `fetchNameFromDefaultList(...)`
+        It works similarly as `fetchNameFromPrivateList(...)` which results in the below API call (in the `fetchData(...)`) function:
+        ```
+        let nameQuery = inputData.nameToSearch.replace(/\s/g, "-");
+        const myHeaders = new Headers({
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${ACCESS_TOKEN}`
+        });
+
+        const base_url = `${API_BASE_URL}/name/${nameQuery}`;
+
+        fetch(base_url, {
+            method: 'GET',
+            headers: myHeaders,
+        })
+        ```
+        Rest of the logics are similar to that of `fetchNameFromPrivateList(...)`.

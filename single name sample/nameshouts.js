@@ -538,15 +538,12 @@ function noSearchUpgrade(preLoadBtnId, audioImgBtnId, audioImgStyle, playerId, i
 class NameFetcher {
     async fetch(source, languageInformation, nameToQuery) {
         let nameList = [];
-
         if (source !== 9999) {
             nameList = await this.fetchNameFromPrivateList(source, languageInformation, nameToQuery);
         }
-
         if (nameList.length == 0) {
             nameList = await this.fetchNameFromDefaultList(languageInformation, nameToQuery);
         }
-
         return nameList;
     }
 
