@@ -203,12 +203,13 @@ function injectAudio(nameTag, nameToQuery, cssStyle, audioImgStyle, infoImgStyle
             let namesInfo = namesLoaded.get(e.target.dataset.uuid);
 
             //LangSelected contains index of picked language
+            
             //Default is 0
             let nameToPlay = namesInfo.nameList[namesInfo.langSelected];
 
 
             var playList = nameToPlay.path;
-            var mediaUrl = 'https://nslibrary01.blob.core.windows.net/ns-audio/';
+            var mediaUrl = 'https://nslibrary01.blob.core.windows.net/';
 
             var i = 0;
 
@@ -289,7 +290,7 @@ function injectAudio(nameTag, nameToQuery, cssStyle, audioImgStyle, infoImgStyle
 
 
             var playList = nameToPlay.path;
-            var mediaUrl = 'https://nslibrary01.blob.core.windows.net/ns-audio/';
+            var mediaUrl = 'https://nslibrary01.blob.core.windows.net/';
 
             var i = 0;
 
@@ -573,6 +574,7 @@ class NameFetcher {
             .map(item => parseInt(item[0]));
 
 
+
         const nameGroupByLanguageId = Object.values(nameDetailResults)
             .flatMap(item => item)
             .filter(item => supportedLanguages.includes(item.language_id))
@@ -584,7 +586,7 @@ class NameFetcher {
                 };
                 (nameInformation.name ?? []).push(current.name);
                 (nameInformation.phonetic ?? []).push(current.name_phonetic);
-                (nameInformation.path ?? []).push(current.path_directory);
+                (nameInformation.path ?? []).push(`ns-audio/${current.path_directory}`);
                 nameInformation.language_id = current.language_id;
                 nameInformation.lang_name = languageInformation[current.language_id]['lang_name'];
                 prev[current.language_id] = nameInformation;
@@ -598,10 +600,23 @@ class NameFetcher {
     async fetchNameFromPrivateList(source, languageInformation, nameToQuery) {
         const searchNameResult = await fetchData({ loadListNames: nameToQuery, source });
         if (searchNameResult === undefined) return []
-        const nameDetailResults = searchNameResult.names;
-
-        const supportedLanguages = nameDetailResults.length > 0 ? [nameDetailResults[0].language_id] : []
-
+        var nameDetailResults = searchNameResult.names;
+        var supportedLanguages = nameDetailResults.length > 0 ? nameDetailResults.map(nD=>nD.language_id) : []
+        
+        //custom name
+        if(supportedLanguages[0]===undefined && searchNameResult.is_custom===1){
+            supportedLanguages=[99999999]
+            for(var i=0;i<nameDetailResults.length;i++)
+                nameDetailResults[i].language_id=99999999
+        }
+        
+        //combo name
+        const uniqueLanguageIds = [...new Set(supportedLanguages)];
+        if (uniqueLanguageIds.length > 1){
+            supportedLanguages=[9999]
+            for(var i=0;i<nameDetailResults.length;i++)
+                nameDetailResults[i].language_id=9999
+        }
 
         const nameGroupByLanguageId = Object.values(nameDetailResults)
             .flatMap(item => item)
@@ -610,17 +625,35 @@ class NameFetcher {
                 const nameInformation = prev[current.language_id] ?? {
                     name: [],
                     phonetic: [],
-                    path: []
+                    path: [],
+                    language_info: []
                 };
                 (nameInformation.name ?? []).push(current.name);
-                (nameInformation.phonetic ?? []).push(current.name_phonetic);
-                (nameInformation.path ?? []).push(current.path_directory);
+                (nameInformation.phonetic ?? []).push(current[current.language_id===99999999?'phonetic':'name_phonetic']);
+                (nameInformation.path ?? []).push(`${current.language_id===99999999?'user-uploads/':'ns-audio/'}${current.path_directory.split('.')[0]}`);
                 nameInformation.language_id = current.language_id;
-                nameInformation.lang_name = languageInformation[current.language_id]['lang_name'];
+                if (current.language_id !== 9999 && current.language_id!==99999999) {
+                    nameInformation.lang_name = languageInformation[current.language_id]['lang_name'];
+                    (nameInformation.language_info ?? []).push(languageInformation[current.language_id]);
+                }
+                //combo Name
+                else if(current.language_id===9999) {
+                    nameInformation.lang_name = 'Combo';
+                    const comboLangInfo = {lang_id: 9999, lang_name: 'Combo', lang_code_2: 'oo', accent_code: 'oo', visible: 1};
+                    (nameInformation.language_info ?? []).push(comboLangInfo);
+                }
+                //custom name
+                else if(current.language_id===99999999) {
+                    nameInformation.lang_name = current.language_of_origin;
+                    const customLangInfo = {lang_id: 99999999, lang_name: current.language_of_origin, lang_code_2: 'oo', accent_code: 'oo', visible: 1};
+                    (nameInformation.language_info ?? []).push(customLangInfo);
+                }
+
                 prev[current.language_id] = nameInformation;
 
                 return prev;
             }, {});
+
 
         return Object.values(nameGroupByLanguageId);
     }
