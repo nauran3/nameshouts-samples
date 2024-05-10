@@ -93,7 +93,7 @@
             - `user_list_id` : The user list id in which the name would be searched.
             - `name` : The name to be searched
             - `email` (Optional) : The email address of the person having the name. This parameter is necessary in the below senarios:
-                - When a list contains multiple people with the same name and we need to specify.
+                - When a list contains multiple people with the same name and it is required to specify.
                 - When it is required to fetch the custom recording (if it exists) of the name by that name's holder.
                     ### Email parameter is not relevant for combo names.
             
