@@ -92,9 +92,18 @@
             The route for the above API call is `${API_BASE_URL}/user/user-list/get-name-group-from-user-list` which has 3 query parameters:
             - `user_list_id` : The user list id in which the name would be searched.
             - `name` : The name to be searched
-            - `email` (Optional) : The email address of the person having the name. This is necessary when a list contains multiple people with the same name, in order to fetch the name for a specific person, this `email` query parameter can be levraged.
+            - `email` (Optional) : The email address of the person having the name. This parameter is necessary in the below senarios:
+                - When a list contains multiple people with the same name and we need to specify.
+                - When it is required to fetch the custom recording (if it exists) of the name by that name's holder.
+                    ### Email parameter is not relevant for combo names.
             
-            For a name that is recorded by a user, the response object's is_custom flag will be set to true. The response object for a custom name has slightly different attributes compared to a name from the NameShouts database.
+            For a name that is recorded by a user, the response object's `is_custom` flag will be set to true. The response object for a custom name has slightly different attributes compared to a name from the NameShouts database.
+            - If the `is_custom` is true and it is required to fetch the user recorded audio for that name, the `email` query parameter must be set while making the api call.
+            - Response objects for user recorded name and nameshouts recorded are a bit different in these below fields:
+                -  `phonetic` vs `name_phonetic`
+                - There is no `language_id` for custom recorded name, it has `language_of_origin` field instead.
+                - The value of the `path_directory` field contains audio file extension (`.mp3`) for custom recorded names whereas Nameshouts recorded ones don't. 
+            These were the key differences for implementation for which the changes in implementations can be seen in `fetchNameFromPrivateList()` method. If  you want to have a look on the full response objects, head over to `Sample API Responses` folder of this repository.
             ### In order to be familiar with the different attributes for the user recorded names and the regular ones, head over to [Nameshouts 2.0 API Documentation](https://documenter.getpostman.com/view/1200138/VUjPJ5xc#dc4068d1-b087-45c1-9f9a-6b1ee551a787). You can handle client UI/UX for different cases by following the API documentation irrespective of your stack.
         - If the name is not found in the private list, then it is searched in the default list as a fallback option which is covered in the below lines of code of `nameshouts.js`:
             ```
